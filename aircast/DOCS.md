@@ -37,7 +37,7 @@ Example app configuration:
 ```yaml
 log_level: info
 address: 192.168.1.234
-latency_rtp: 5000
+latency_rtp: 2000
 latency_http: 0
 drift: true
 ```
@@ -78,6 +78,12 @@ Allows you to tweak the buffering, which is needed when the audio is stuttering
 has to buffer the RTP audio (AirPlay). Setting this value below 500ms is not
 recommended! Setting the value to `0` causes the app the get the value from
 AirPlay.
+
+**Note**: Keep this at or below `2267`. AirCast reports the latency to the
+AirPlay sender in a header that holds at most 5 digits (`ms × 44.1`). Above
+2267 ms the value is silently truncated, and the sender is told a latency
+about 10 times smaller than the one actually used (e.g., `5000` is reported
+as 500 ms).
 
 ### Option: `latency_http`
 
@@ -157,6 +163,12 @@ separately. Every time it finds a new device, it will be added to that file.
 
 > **NOTE**: It is HIGHLY recommended to stop the app before making changes
 > to the configuration file manually.
+
+The audio codec sent to the Chromecast devices is set with `<codec>` in the
+`<common>` section (or per `<device>`), e.g., `<codec>mp3:192</codec>`.
+`mp3` is the most broadly compatible choice. Avoid `aac` with Chromecast
+Audio devices: they accept the stream and report "playing", but produce no
+sound.
 
 ## Known issues and limitations
 
